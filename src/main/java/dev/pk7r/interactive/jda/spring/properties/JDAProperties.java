@@ -1,16 +1,16 @@
 package dev.pk7r.interactive.jda.spring.properties;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
+@Setter
 @ConfigurationProperties("spring.jda")
 public class JDAProperties {
 
@@ -18,8 +18,8 @@ public class JDAProperties {
 
     private OnlineStatus onlineStatus = OnlineStatus.ONLINE;
 
-    private Set<CacheFlag> cacheFlags;
+    private Set<CacheFlag> cacheFlags = new HashSet<>();
 
-    private String guildId;
+    private long guildId = -1L;
 
 }
