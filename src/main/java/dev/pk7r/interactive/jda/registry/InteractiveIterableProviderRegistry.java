@@ -1,19 +1,25 @@
 package dev.pk7r.interactive.jda.registry;
 
 import dev.pk7r.interactive.jda.exception.DuplicateInteractiveComponentException;
+import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveEntityMenu;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractiveIterableProviderRegistry extends InteractiveComponentRegistry<InteractiveProvider> {
 
     @Getter
     private static final InteractiveComponentRegistry<InteractiveProvider> instance = new InteractiveIterableProviderRegistry();
+
+    @Getter
+    private final Set<InteractiveProvider> registered = new HashSet<>();
 
     @Override
     public Optional<InteractiveProvider> get(String id) {
@@ -31,7 +37,7 @@ public class InteractiveIterableProviderRegistry extends InteractiveComponentReg
             throw new DuplicateInteractiveComponentException(message);
         }
         getRegistered().add(interactive);
-        return null;
+        return interactive;
     }
 
     @Override

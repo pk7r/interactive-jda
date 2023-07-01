@@ -9,9 +9,7 @@ import dev.pk7r.interactive.jda.support.component.EntityMenuComponent;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveEntityMenu;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaEntityMenuWrapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -21,17 +19,18 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@Builder
-class EntityMenuComponentFactory extends InteractiveFactory<EntityMenuComponent, InteractiveEntityMenu> {
+class EntityMenuComponentFactory extends InteractiveFactoryAware<EntityMenuComponent, InteractiveEntityMenu>
+        implements InteractiveFactory<EntityMenuComponent, InteractiveEntityMenu> {
 
-    private JDA jda;
+    private final Set<EntityMenuComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveEntityMenu> registry;
 
-    @Singular
-    private Set<EntityMenuComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveEntityMenu> registry;
+    protected EntityMenuComponentFactory(JDA jda, Guild guild, Set<EntityMenuComponent> components, InteractiveComponentRegistry<InteractiveEntityMenu> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveEntityMenu create(EntityMenuComponent component) {

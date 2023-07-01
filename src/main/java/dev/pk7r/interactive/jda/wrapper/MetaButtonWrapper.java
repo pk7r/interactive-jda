@@ -17,7 +17,10 @@ public class MetaButtonWrapper implements MetaComponentWrapper<MetaButton, Butto
     @Override
     public Button wrap(MetaButton metaButton) {
         val button = Button.of(metaButton.style(),
-                metaButton.idOrUrl(), metaButton.label(), Emoji.fromUnicode(metaButton.unicodeEmoji()));
+                metaButton.idOrUrl(), metaButton.label());
+        if (!metaButton.unicodeEmoji().isEmpty()) {
+            button.withEmoji(Emoji.fromUnicode(metaButton.unicodeEmoji()));
+        }
         return button.withDisabled(metaButton.disabled());
     }
 }

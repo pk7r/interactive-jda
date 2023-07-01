@@ -2,22 +2,26 @@ package dev.pk7r.interactive.jda.factory;
 
 import dev.pk7r.interactive.jda.registry.InteractiveComponentRegistry;
 import dev.pk7r.interactive.jda.support.definition.InteractiveComponentDefinition;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Set;
 
-public abstract class InteractiveFactory<T, K extends InteractiveComponentDefinition<T, ?>>
-        extends InteractiveFactoryAware {
 
-    public InteractiveFactory<T, K> initialize() {
-        super.initialize();
+public interface InteractiveFactory<T, K extends InteractiveComponentDefinition<T, ?>> {
+
+    default void initialize() {
         getComponents().forEach(this::create);
-        return this;
     }
 
-    public abstract K create(T component);
+    Set<T> getComponents();
 
-    public abstract Set<T> getComponents();
+    InteractiveComponentRegistry<K> getRegistry();
 
-    public abstract InteractiveComponentRegistry<K> getRegistry();
+    K create(T component);
+
+    Guild getGuild();
+
+    JDA getJda();
 
 }

@@ -9,9 +9,7 @@ import dev.pk7r.interactive.jda.support.component.StringMenuComponent;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveStringMenu;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaStringMenuWrapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -23,17 +21,18 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@Builder
-class StringMenuComponentFactory extends InteractiveFactory<StringMenuComponent, InteractiveStringMenu> {
+class StringMenuComponentFactory extends InteractiveFactoryAware<StringMenuComponent, InteractiveStringMenu>
+        implements InteractiveFactory<StringMenuComponent, InteractiveStringMenu> {
 
-    private JDA jda;
+    private final Set<StringMenuComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveStringMenu> registry;
 
-    @Singular
-    private Set<StringMenuComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveStringMenu> registry;
+    protected StringMenuComponentFactory(JDA jda, Guild guild, Set<StringMenuComponent> components, InteractiveComponentRegistry<InteractiveStringMenu> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveStringMenu create(StringMenuComponent component) {

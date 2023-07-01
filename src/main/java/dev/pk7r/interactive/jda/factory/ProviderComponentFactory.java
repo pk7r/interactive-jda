@@ -7,9 +7,7 @@ import dev.pk7r.interactive.jda.support.common.Sender;
 import dev.pk7r.interactive.jda.support.component.ProviderComponent;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveProvider;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,17 +18,18 @@ import org.springframework.util.LinkedMultiValueMap;
 import java.util.Set;
 
 @Getter
-@Builder
-class ProviderComponentFactory extends InteractiveFactory<ProviderComponent, InteractiveProvider> {
+class ProviderComponentFactory extends InteractiveFactoryAware<ProviderComponent, InteractiveProvider>
+        implements InteractiveFactory<ProviderComponent, InteractiveProvider> {
 
-    private JDA jda;
+    private final Set<ProviderComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveProvider> registry;
 
-    @Singular
-    private Set<ProviderComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveProvider> registry;
+    protected ProviderComponentFactory(JDA jda, Guild guild, Set<ProviderComponent> components, InteractiveComponentRegistry<InteractiveProvider> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveProvider create(ProviderComponent component) {

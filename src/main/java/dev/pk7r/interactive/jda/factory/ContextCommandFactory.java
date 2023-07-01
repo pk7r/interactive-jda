@@ -8,42 +8,62 @@ import dev.pk7r.interactive.jda.exception.InteractiveComponentPublishException;
 import dev.pk7r.interactive.jda.registry.InteractiveComponentRegistry;
 import dev.pk7r.interactive.jda.support.common.Sender;
 import dev.pk7r.interactive.jda.support.component.ContextCommandComponent;
+import dev.pk7r.interactive.jda.support.definition.CommandComponentDefinition;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveContextCommand;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaContextCommandWrapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@Builder
-class ContextCommandFactory extends PublishableInteractiveFactory<ContextCommandComponent, InteractiveContextCommand> {
+class ContextCommandFactory extends InteractiveFactoryAware<ContextCommandComponent, InteractiveContextCommand>
+        implements PublishableInteractiveFactory<CommandData, ContextCommandComponent, InteractiveContextCommand> {
 
-    private JDA jda;
+    private final Set<ContextCommandComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveContextCommand> registry;
 
-    @Singular
-    private Set<ContextCommandComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveContextCommand> registry;
+    protected ContextCommandFactory(JDA jda, Guild guild, Set<ContextCommandComponent> components, InteractiveComponentRegistry<InteractiveContextCommand> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
-    void publish(InteractiveContextCommand interactiveContextCommand) throws InteractiveComponentPublishException {
-        if (interactiveContextCommand.isGuildOnly()) {
-            guild.updateCommands().addCommands(interactiveContextCommand.getComponent()).queue();
-            return;
-        }
-        jda.updateCommands().addCommands(interactiveContextCommand.getComponent()).queue();
+    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
+        val interactive = getRegistry().get(event.getFullCommandName())
+                .filter(i -> i.getType().equals(ContextCommandType.MESSAGE))
+                .orElseThrow(() -> {
+                    val message = String.format("MessageContextCommand with id '%s' not found", event.getFullCommandName());
+                    return new InteractiveComponentNotFoundException(message);
+                });
+        interactive.getInteractiveComponent()
+                .interact(Sender.ofEvent(event))
+                .accept(event.getInteraction());
     }
+
+    @Override
+    public void onUserContextInteraction(UserContextInteractionEvent event) {
+        val interactive = getRegistry().get(event.getFullCommandName())
+                .filter(i -> i.getType().equals(ContextCommandType.USER))
+                .orElseThrow(() -> {
+                    val message = String.format("UserContextCommand with id '%s' not found", event.getFullCommandName());
+                    return new InteractiveComponentNotFoundException(message);
+                });
+        interactive.getInteractiveComponent()
+                .interact(Sender.ofEvent(event))
+                .accept(event.getInteraction());
+    }
+
 
     @Override
     public InteractiveContextCommand create(ContextCommandComponent component) {
@@ -72,28 +92,16 @@ class ContextCommandFactory extends PublishableInteractiveFactory<ContextCommand
     }
 
     @Override
-    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-        val interactive = getRegistry().get(event.getFullCommandName())
-                .filter(i -> i.getType().equals(ContextCommandType.MESSAGE))
-                .orElseThrow(() -> {
-                    val message = String.format("MessageContextCommand with id '%s' not found", event.getFullCommandName());
-                    return new InteractiveComponentNotFoundException(message);
+    public void publish() throws InteractiveComponentPublishException {
+        getRegistry().getRegistered()
+                .stream()
+                .filter(Objects::nonNull)
+                .forEach(d -> {
+                    if (((CommandComponentDefinition) d).isGuildOnly()) {
+                        getGuild().updateCommands().addCommands(d.getComponent()).queue();
+                    } else {
+                        getJda().updateCommands().addCommands(d.getComponent()).queue();
+                    }
                 });
-        interactive.getInteractiveComponent()
-                .interact(Sender.ofEvent(event))
-                .accept(event.getInteraction());
-    }
-
-    @Override
-    public void onUserContextInteraction(UserContextInteractionEvent event) {
-        val interactive = getRegistry().get(event.getFullCommandName())
-                .filter(i -> i.getType().equals(ContextCommandType.USER))
-                .orElseThrow(() -> {
-                    val message = String.format("UserContextCommand with id '%s' not found", event.getFullCommandName());
-                    return new InteractiveComponentNotFoundException(message);
-                });
-        interactive.getInteractiveComponent()
-                .interact(Sender.ofEvent(event))
-                .accept(event.getInteraction());
     }
 }

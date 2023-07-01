@@ -9,9 +9,7 @@ import dev.pk7r.interactive.jda.support.component.ModalComponent;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveModal;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaModalWrapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -22,17 +20,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 @Getter
-@Builder
-class ModalComponentFactory extends InteractiveFactory<ModalComponent, InteractiveModal> {
+class ModalComponentFactory extends InteractiveFactoryAware<ModalComponent, InteractiveModal>
+        implements InteractiveFactory<ModalComponent, InteractiveModal> {
 
-    private JDA jda;
+    private final Set<ModalComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveModal> registry;
 
-    @Singular
-    private Set<ModalComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveModal> registry;
+    protected ModalComponentFactory(JDA jda, Guild guild, Set<ModalComponent> components, InteractiveComponentRegistry<InteractiveModal> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveModal create(ModalComponent component) {

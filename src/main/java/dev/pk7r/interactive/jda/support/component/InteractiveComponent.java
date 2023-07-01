@@ -1,5 +1,6 @@
 package dev.pk7r.interactive.jda.support.component;
 
+import dev.pk7r.interactive.jda.support.common.Interactive;
 import dev.pk7r.interactive.jda.support.common.Sender;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public interface InteractiveComponent<T> {
+public interface InteractiveComponent<T> extends Interactive {
 
     default Consumer<T> interact(@NotNull Sender sender) {
         return i -> {};

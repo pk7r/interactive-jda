@@ -9,7 +9,6 @@ import dev.pk7r.interactive.jda.support.component.ButtonComponent;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveButton;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaButtonWrapper;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
@@ -21,16 +20,18 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@Builder
-class ButtonComponentFactory extends InteractiveFactory<ButtonComponent, InteractiveButton> {
+class ButtonComponentFactory extends InteractiveFactoryAware<ButtonComponent, InteractiveButton>
+        implements InteractiveFactory<ButtonComponent, InteractiveButton> {
 
-    private JDA jda;
+    private final Set<ButtonComponent> components;
 
-    private Guild guild;
+    private final InteractiveComponentRegistry<InteractiveButton> registry;
 
-    private Set<ButtonComponent> components;
-
-    private InteractiveComponentRegistry<InteractiveButton> registry;
+    protected ButtonComponentFactory(JDA jda, Guild guild, Set<ButtonComponent> components, InteractiveComponentRegistry<InteractiveButton> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveButton create(ButtonComponent component) {

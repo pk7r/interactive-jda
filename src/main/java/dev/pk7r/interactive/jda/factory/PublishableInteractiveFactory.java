@@ -1,20 +1,18 @@
 package dev.pk7r.interactive.jda.factory;
 
-import dev.pk7r.interactive.jda.exception.InteractiveComponentPublishException;
 import dev.pk7r.interactive.jda.support.component.InteractiveComponent;
 import dev.pk7r.interactive.jda.support.definition.InteractiveComponentDefinition;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public abstract class PublishableInteractiveFactory<T extends InteractiveComponent<?>,
-                                                    K extends InteractiveComponentDefinition<T, ?>>
+public interface PublishableInteractiveFactory<D extends CommandData, T extends InteractiveComponent<?>,
+                                                    K extends InteractiveComponentDefinition<T, D>>
         extends InteractiveFactory<T, K> {
 
     @Override
-    public InteractiveFactory<T, K> initialize() {
-        super.initialize();
-        getRegistry().getRegistered().forEach(this::publish);
-        return this;
+    default void initialize() {
+        InteractiveFactory.super.initialize();
+        publish();
     }
 
-    abstract void publish(K k) throws InteractiveComponentPublishException;
-
+    void publish();
 }

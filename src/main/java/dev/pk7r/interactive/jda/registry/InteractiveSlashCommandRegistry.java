@@ -1,19 +1,25 @@
 package dev.pk7r.interactive.jda.registry;
 
 import dev.pk7r.interactive.jda.exception.DuplicateInteractiveComponentException;
+import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveModal;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveSlashCommand;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractiveSlashCommandRegistry extends InteractiveComponentRegistry<InteractiveSlashCommand> {
 
     @Getter
     private static final InteractiveComponentRegistry<InteractiveSlashCommand> instance = new InteractiveSlashCommandRegistry();
+
+    @Getter
+    private final Set<InteractiveSlashCommand> registered = new HashSet<>();
 
     @Override
     public Optional<InteractiveSlashCommand> get(String id) {
@@ -30,7 +36,7 @@ public class InteractiveSlashCommandRegistry extends InteractiveComponentRegistr
             throw new DuplicateInteractiveComponentException(message);
         }
         getRegistered().add(interactive);
-        return null;
+        return interactive;
     }
 
     @Override

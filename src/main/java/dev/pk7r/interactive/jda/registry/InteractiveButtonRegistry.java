@@ -7,13 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractiveButtonRegistry extends InteractiveComponentRegistry<InteractiveButton> {
 
     @Getter
     private static final InteractiveComponentRegistry<InteractiveButton> instance = new InteractiveButtonRegistry();
+
+    @Getter
+    private final Set<InteractiveButton> registered = new HashSet<>();
 
     @Override
     public Optional<InteractiveButton> get(String id) {
@@ -30,7 +35,7 @@ public class InteractiveButtonRegistry extends InteractiveComponentRegistry<Inte
             throw new DuplicateInteractiveComponentException(message);
         }
         getRegistered().add(interactive);
-        return null;
+        return interactive;
     }
 
     @Override

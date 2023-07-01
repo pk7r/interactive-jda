@@ -7,33 +7,37 @@ import dev.pk7r.interactive.jda.exception.InteractiveComponentPublishException;
 import dev.pk7r.interactive.jda.registry.InteractiveComponentRegistry;
 import dev.pk7r.interactive.jda.support.common.Sender;
 import dev.pk7r.interactive.jda.support.component.SlashCommandComponent;
+import dev.pk7r.interactive.jda.support.definition.CommandComponentDefinition;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveSlashCommand;
 import dev.pk7r.interactive.jda.utils.AnnotationUtils;
 import dev.pk7r.interactive.jda.utils.CommandUtils;
 import dev.pk7r.interactive.jda.wrapper.MetaSlashCommandWrapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.Set;
 
+@Slf4j
 @Getter
-@Builder
-public class SlashCommandFactory extends PublishableInteractiveFactory<SlashCommandComponent, InteractiveSlashCommand> {
+public class SlashCommandFactory extends InteractiveFactoryAware<SlashCommandComponent, InteractiveSlashCommand>
+        implements PublishableInteractiveFactory<SlashCommandData, SlashCommandComponent, InteractiveSlashCommand>  {
 
-    private JDA jda;
 
-    private Guild guild;
+    private final Set<SlashCommandComponent> components;
 
-    @Singular
-    private Set<SlashCommandComponent> components;
+    private final InteractiveComponentRegistry<InteractiveSlashCommand> registry;
 
-    private InteractiveComponentRegistry<InteractiveSlashCommand> registry;
+    protected SlashCommandFactory(JDA jda, Guild guild, Set<SlashCommandComponent> components, InteractiveComponentRegistry<InteractiveSlashCommand> registry) {
+        super(jda, guild);
+        this.components = components;
+        this.registry = registry;
+    }
 
     @Override
     public InteractiveSlashCommand create(SlashCommandComponent component) {
@@ -62,20 +66,23 @@ public class SlashCommandFactory extends PublishableInteractiveFactory<SlashComm
     }
 
     @Override
-    void publish(InteractiveSlashCommand interactiveSlashCommand) throws InteractiveComponentPublishException {
-        if (interactiveSlashCommand.isGuildOnly()) {
-            guild.updateCommands().addCommands(interactiveSlashCommand.getComponent()).queue();
-            return;
-        }
-        jda.updateCommands().addCommands(interactiveSlashCommand.getComponent()).queue();
-    }
-
-    @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         val interactive = getRegistry().get(event.getFullCommandName())
                 .orElseThrow();
         interactive.getInteractiveComponent()
                 .interact(Sender.ofEvent(event), event.getOptions().toArray(OptionMapping[]::new))
                 .accept(event.getInteraction());
+    }
+
+    @Override
+    public void publish() throws InteractiveComponentPublishException {
+        getRegistry().getRegistered()
+                .forEach(d -> {
+                    if (((CommandComponentDefinition) d).isGuildOnly()) {
+                        getGuild().updateCommands().addCommands(d.getComponent()).queue();
+                    } else {
+                        getJda().updateCommands().addCommands(d.getComponent()).queue();
+                    }
+                });
     }
 }

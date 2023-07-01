@@ -2,18 +2,24 @@ package dev.pk7r.interactive.jda.registry;
 
 import dev.pk7r.interactive.jda.exception.DuplicateInteractiveComponentException;
 import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveModal;
+import dev.pk7r.interactive.jda.support.definition.interactive.InteractiveProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractiveModalRegistry extends InteractiveComponentRegistry<InteractiveModal> {
 
     @Getter
     private static final InteractiveComponentRegistry<InteractiveModal> instance = new InteractiveModalRegistry();
+
+    @Getter
+    private final Set<InteractiveModal> registered = new HashSet<>();
 
     @Override
     public Optional<InteractiveModal> get(String id) {
@@ -30,7 +36,7 @@ public class InteractiveModalRegistry extends InteractiveComponentRegistry<Inter
             throw new DuplicateInteractiveComponentException(message);
         }
         getRegistered().add(interactive);
-        return null;
+        return interactive;
     }
 
     @Override

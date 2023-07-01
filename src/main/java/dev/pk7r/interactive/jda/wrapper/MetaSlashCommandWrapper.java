@@ -90,7 +90,7 @@ public class MetaSlashCommandWrapper implements MetaComponentWrapper<Class<? ext
         Arrays.stream(option.localizationsMapping().descriptions())
                 .forEach(descLocalization ->
                         data.setNameLocalization(descLocalization.locale(), descLocalization.value()));
-        data.setChannelTypes(option.channelTypes());
+        if (option.channelTypes().length != 0) data.setChannelTypes(option.channelTypes());
         if (data.isAutoComplete()) {
             val provider = InteractiveIterableProviderRegistry.getInstance().get(option.providerId());
             if (provider.isPresent()) {
