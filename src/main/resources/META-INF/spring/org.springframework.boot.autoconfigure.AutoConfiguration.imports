@@ -3,3 +3,4 @@ dev.pk7r.interactive.jda.spring.configuration.JDAEventPublisherAutoConfiguration
 dev.pk7r.interactive.jda.spring.configuration.JDAInteractiveFactoryManagerAutoConfiguration
 dev.pk7r.interactive.jda.spring.configuration.AutowireCapableJDAComponentsAutoConfiguration
 dev.pk7r.interactive.jda.spring.configuration.InteractiveJDAManagerAutoConfiguration
+dev.pk7r.interactive.jda.spring.configuration.ListenerAdapterAutoConfiguration
