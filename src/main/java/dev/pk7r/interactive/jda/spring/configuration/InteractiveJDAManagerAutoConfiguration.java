@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
-@AutoConfigureAfter(JDAEventPublisherAutoConfiguration.class)
+@AutoConfigureAfter(JDAAutoConfiguration.class)
 public class InteractiveJDAManagerAutoConfiguration {
 
     @Bean

@@ -37,7 +37,7 @@ public class InteractiveFactoryManager {
 
     private InteractiveFactory<StringMenuComponent, InteractiveStringMenu> stringMenuInteractiveFactory;
 
-    public InteractiveFactoryManager initialize() {
+    public InteractiveFactoryManager  initialize() {
         log.info("Guild id {}", interactiveJDAManager.getGuild().getId());
         log.info("JDA Token {}", interactiveJDAManager.getJda().getToken());
         if (isInitialized()) return this;
@@ -55,13 +55,6 @@ public class InteractiveFactoryManager {
                     interactiveJDAManager.getButtonComponents(),
                     InteractiveButtonRegistry.getInstance()));
         }
-        if (Objects.isNull(getModalInteractiveFactory())) {
-            setModalInteractiveFactory(new ModalComponentFactory(
-                    interactiveJDAManager.getJda(),
-                    interactiveJDAManager.getGuild(),
-                    interactiveJDAManager.getModalComponents(),
-                    InteractiveModalRegistry.getInstance()));
-        }
         if (Objects.isNull(getStringMenuInteractiveFactory())) {
             setStringMenuInteractiveFactory(new StringMenuComponentFactory(
                     interactiveJDAManager.getJda(),
@@ -75,6 +68,13 @@ public class InteractiveFactoryManager {
                     interactiveJDAManager.getGuild(),
                     interactiveJDAManager.getEntityMenuComponents(),
                     InteractiveEntityMenuRegistry.getInstance()));
+        }
+        if (Objects.isNull(getModalInteractiveFactory())) {
+            setModalInteractiveFactory(new ModalComponentFactory(
+                    interactiveJDAManager.getJda(),
+                    interactiveJDAManager.getGuild(),
+                    interactiveJDAManager.getModalComponents(),
+                    InteractiveModalRegistry.getInstance()));
         }
         if (Objects.isNull(getSlashCommandInteractiveFactory())) {
             setSlashCommandInteractiveFactory(new SlashCommandFactory(
@@ -92,9 +92,9 @@ public class InteractiveFactoryManager {
         }
         getProviderInteractiveFactory().initialize();
         getButtonInteractiveFactory().initialize();
-        getModalInteractiveFactory().initialize();
         getStringMenuInteractiveFactory().initialize();
         getEntityMenuInteractiveFactory().initialize();
+        getModalInteractiveFactory().initialize();
         getSlashCommandInteractiveFactory().initialize();
         getContextCommandInteractiveFactory().initialize();
         setInitialized(true);

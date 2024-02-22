@@ -76,13 +76,17 @@ public class SlashCommandFactory extends InteractiveFactoryAware<SlashCommandCom
 
     @Override
     public void publish() throws InteractiveComponentPublishException {
-        getRegistry().getRegistered()
-                .forEach(d -> {
-                    if (((CommandComponentDefinition) d).isGuildOnly()) {
-                        getGuild().updateCommands().addCommands(d.getComponent()).queue();
-                    } else {
-                        getJda().updateCommands().addCommands(d.getComponent()).queue();
-                    }
-                });
+        var guildCommands = getRegistry().getRegistered()
+                .stream()
+                .filter(InteractiveSlashCommand::isGuildOnly)
+                .map(InteractiveSlashCommand::getComponent)
+                .toList();
+        getGuild().updateCommands().addCommands(guildCommands).queue();
+        var globalCommands = getRegistry().getRegistered()
+                .stream()
+                .filter(i -> !i.isGuildOnly())
+                .map(InteractiveSlashCommand::getComponent)
+                .toList();
+        getJda().updateCommands().addCommands(globalCommands).queue();
     }
 }

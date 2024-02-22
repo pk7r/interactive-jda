@@ -11,13 +11,6 @@ public class AutowireCapableJDAComponentsAutoConfiguration {
 
     public AutowireCapableJDAComponentsAutoConfiguration(InteractiveFactoryManager factoryManager,
                                                          ConfigurableListableBeanFactory beanFactory) {
-        factoryManager.getButtonInteractiveFactory().getRegistry().getRegistered()
-                .forEach(i -> beanFactory.registerSingleton(i.getId(), i.getComponent()));
-        factoryManager.getModalInteractiveFactory().getRegistry().getRegistered()
-                .forEach(i -> beanFactory.registerSingleton(i.getId(), i.getComponent()));
-        factoryManager.getEntityMenuInteractiveFactory().getRegistry().getRegistered()
-                .forEach(i -> beanFactory.registerSingleton(i.getId(), i.getComponent()));
-        factoryManager.getStringMenuInteractiveFactory().getRegistry().getRegistered()
-                .forEach(i -> beanFactory.registerSingleton(i.getId(), i.getComponent()));
+
     }
 }

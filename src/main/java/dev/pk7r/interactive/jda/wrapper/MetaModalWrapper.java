@@ -14,8 +14,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.Nullable;
@@ -38,14 +40,14 @@ public class MetaModalWrapper implements MetaComponentWrapper<MetaModal, Modal> 
     }
 
     private ActionRow wrapRow(MetaActionRow row) {
-        val components = new ArrayList<ItemComponent>();
+        val components = new ArrayList<ActionComponent>();
         val items = row.value();
         Arrays.stream(items).map(this::wrapItem).filter(Objects::nonNull).forEach(components::add);
         return ActionRow.of(components);
     }
 
     @Nullable
-    private ItemComponent wrapItem(MetaItemComponent item) {
+    private ActionComponent wrapItem(MetaItemComponent item) {
         switch (item.type()) {
             case TEXT_INPUT -> {
                 val input = item.textInput();
