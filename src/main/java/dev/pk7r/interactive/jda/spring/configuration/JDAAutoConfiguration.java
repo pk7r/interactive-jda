@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -27,11 +28,12 @@ public class JDAAutoConfiguration {
     @SneakyThrows
     @ConditionalOnMissingBean
     public JDA jdaBean() {
-        val requiredIntents = properties.getCacheFlags()
+        val requiredIntents = new HashSet<>(properties.getCacheFlags()
                 .stream()
                 .map(CacheFlag::getRequiredIntent)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toUnmodifiableSet()));
+        requiredIntents.addAll(properties.getIntents());
         return JDABuilder.createDefault(properties.getToken())
                 .setStatus(properties.getOnlineStatus())
                 .enableCache(properties.getCacheFlags())
